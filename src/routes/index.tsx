@@ -103,7 +103,7 @@ function Index() {
         {filtered.length === 0 ? (
           <p className="text-center text-muted-foreground py-20">No prompts match your search.</p>
         ) : (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4">
             {filtered.map((p, i) => (
               <PromptCard key={p.id} prompt={p} index={i} onOpen={setActive} />
             ))}
