@@ -75,10 +75,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Promptly — Discover & Share AI Prompts" },
       { name: "description", content: "A curated gallery of stunning AI-generated images and the prompts behind them. Copy, remix, and create." },
       { property: "og:title", content: "Promptly — Discover & Share AI Prompts" },
-      { property: "og:description", content: "A curated gallery of AI prompts with image previews." },
+      { property: "og:description", content: "A curated gallery of stunning AI-generated images and the prompts behind them. Copy, remix, and create." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Promptly — Discover & Share AI Prompts" },
+      { name: "twitter:description", content: "A curated gallery of stunning AI-generated images and the prompts behind them. Copy, remix, and create." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0a549bf1-02fe-46d6-bd42-f0c5d1c8ffdf" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0a549bf1-02fe-46d6-bd42-f0c5d1c8ffdf" },
     ],
     links: [
       {
