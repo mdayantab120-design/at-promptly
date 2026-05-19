@@ -1,26 +1,121 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { Sparkles, Search } from "lucide-react";
+import { Toaster } from "sonner";
+import { prompts, type Prompt } from "@/data/prompts";
+import { PromptCard } from "@/components/PromptCard";
+import { PromptModal } from "@/components/PromptModal";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
+const categories = ["All", ...Array.from(new Set(prompts.map((p) => p.category)))];
 
 function Index() {
-  return <PlaceholderIndex />;
+  const [active, setActive] = useState<Prompt | null>(null);
+  const [category, setCategory] = useState("All");
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    return prompts.filter((p) => {
+      const matchCat = category === "All" || p.category === category;
+      const q = query.trim().toLowerCase();
+      const matchQ =
+        !q ||
+        p.title.toLowerCase().includes(q) ||
+        p.prompt.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q);
+      return matchCat && matchQ;
+    });
+  }, [category, query]);
+
+  return (
+    <div className="min-h-screen">
+      <Toaster theme="dark" position="top-center" />
+
+      <header className="sticky top-0 z-30 glass border-b border-border/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="size-8 rounded-xl bg-brand grid place-items-center shadow-glow">
+              <Sparkles className="size-4 text-primary-foreground" />
+            </div>
+            <span className="font-display font-bold text-lg tracking-tight">Promptly</span>
+          </div>
+          <div className="ml-auto relative w-full max-w-xs hidden sm:block">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search prompts…"
+              className="w-full rounded-full bg-secondary/70 border border-border pl-9 pr-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60"
+            />
+          </div>
+        </div>
+      </header>
+
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-12 sm:pt-20 pb-8 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full glass border border-border/60 px-3 py-1 text-xs text-muted-foreground animate-fade-up">
+          <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+          {prompts.length} curated prompts and counting
+        </div>
+        <h1
+          className="mt-5 text-4xl sm:text-6xl md:text-7xl font-display font-bold tracking-tight animate-fade-up"
+          style={{ animationDelay: "80ms" }}
+        >
+          Prompts that <span className="text-gradient">spark</span> imagination.
+        </h1>
+        <p
+          className="mx-auto mt-5 max-w-xl text-base sm:text-lg text-muted-foreground animate-fade-up"
+          style={{ animationDelay: "160ms" }}
+        >
+          A community gallery of stunning AI-generated images. Tap any card, copy the prompt, and create something new.
+        </p>
+
+        <div className="sm:hidden mt-6 relative max-w-md mx-auto">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search prompts…"
+            className="w-full rounded-full bg-secondary/70 border border-border pl-9 pr-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60"
+          />
+        </div>
+
+        <div className="mt-8 flex flex-wrap justify-center gap-2 animate-fade-up" style={{ animationDelay: "240ms" }}>
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className={`rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium transition-all border ${
+                category === c
+                  ? "bg-brand text-primary-foreground border-transparent shadow-glow"
+                  : "bg-secondary/60 text-muted-foreground border-border hover:text-foreground hover:border-primary/40"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 pb-20">
+        {filtered.length === 0 ? (
+          <p className="text-center text-muted-foreground py-20">No prompts match your search.</p>
+        ) : (
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5">
+            {filtered.map((p, i) => (
+              <PromptCard key={p.id} prompt={p} index={i} onOpen={setActive} />
+            ))}
+          </div>
+        )}
+      </main>
+
+      <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground">
+        Made with <span className="text-gradient font-semibold">Promptly</span> · Inspire & be inspired.
+      </footer>
+
+      <PromptModal prompt={active} onClose={() => setActive(null)} />
+    </div>
+  );
 }
