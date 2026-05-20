@@ -23,7 +23,7 @@ export function PromptCard({ prompt, index, onOpen }: Props) {
   return (
     <article
       onClick={() => onOpen(prompt)}
-      className="group mb-4 break-inside-avoid cursor-pointer rounded-3xl bg-card shadow-card overflow-hidden border border-border/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-glow hover:border-primary/40 animate-fade-up"
+      className="group mb-3 sm:mb-4 break-inside-avoid cursor-pointer rounded-2xl sm:rounded-3xl bg-card shadow-card overflow-hidden border border-border/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-glow hover:border-primary/40 animate-fade-up"
       style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
     >
       <div className="relative overflow-hidden">
