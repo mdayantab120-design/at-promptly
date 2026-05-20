@@ -11,7 +11,14 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const categories = ["All", ...Array.from(new Set(prompts.map((p) => p.category)))];
+const baseCategories = ["All", ...Array.from(new Set(prompts.map((p) => p.category)))];
+const categories = [...baseCategories, "Trending", "Instagram", "Photography"];
+
+const subsets: Record<string, Prompt[]> = {
+  Trending: prompts.slice(0, 6),
+  Instagram: prompts.slice(2, 8),
+  Photography: prompts.slice(4, 10),
+};
 
 function Index() {
   const [active, setActive] = useState<Prompt | null>(null);
@@ -19,21 +26,21 @@ function Index() {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
-    return prompts.filter((p) => {
-      const matchCat = category === "All" || p.category === category;
+    const subset = subsets[category] ?? prompts;
+    const source = subsets[category] ? subset : prompts;
+
+    return source.filter((p) => {
+      const matchCat = category === "All" || subsets[category] || p.category === category;
+      if (!matchCat) return false;
       const q = query.trim().toLowerCase();
-      const matchQ =
-        !q ||
+      if (!q) return true;
+      return (
         p.title.toLowerCase().includes(q) ||
         p.prompt.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q);
-      return matchCat && matchQ;
+        p.category.toLowerCase().includes(q)
+      );
     });
   }, [category, query]);
-
-  const trending = prompts.slice(0, 6);
-  const instagram = [...prompts].slice(2, 8);
-  const photography = [...prompts].slice(4, 10);
 
   return (
     <div className="min-h-screen">
