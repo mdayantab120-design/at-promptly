@@ -75,11 +75,6 @@ function Index() {
         </p>
       </section>
 
-      <div className="mx-auto max-w-7xl pt-2">
-        <HorizontalRow title="Trending" items={trending} onOpen={setActive} />
-        <HorizontalRow title="Instagram" items={instagram} onOpen={setActive} />
-        <HorizontalRow title="Photography" items={photography} onOpen={setActive} />
-      </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 mb-4">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth snap-x">
