@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import { prompts, type Prompt } from "@/data/prompts";
 import { PromptCard } from "@/components/PromptCard";
 import { PromptModal } from "@/components/PromptModal";
-import { HorizontalRow } from "@/components/HorizontalRow";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
