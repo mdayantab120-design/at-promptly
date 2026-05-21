@@ -53,7 +53,7 @@ export function PromptModal({ prompt, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl max-h-[92vh] overflow-hidden rounded-3xl bg-card border border-border shadow-glow grid md:grid-cols-[1.2fr_1fr]"
+        className="relative w-full max-w-6xl max-h-[95vh] overflow-hidden rounded-3xl bg-card border border-border shadow-glow grid md:grid-cols-[1.4fr_1fr]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -64,7 +64,7 @@ export function PromptModal({ prompt, onClose }: Props) {
           <X className="size-4" />
         </button>
 
-        <div className="bg-background/40 flex items-center justify-center max-h-[50vh] md:max-h-[92vh] overflow-hidden">
+        <div className="bg-background/40 flex items-center justify-center max-h-[65vh] md:max-h-[95vh] overflow-hidden">
           <img src={prompt.image} alt={prompt.title} className="w-full h-full object-contain" />
         </div>
 
