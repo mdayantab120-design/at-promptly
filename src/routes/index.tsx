@@ -11,14 +11,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const baseCategories = ["All", ...Array.from(new Set(prompts.map((p) => p.category)))];
-const categories = [...baseCategories, "Trending", "Instagram", "Photography"];
-
-const subsets: Record<string, Prompt[]> = {
-  Trending: prompts.slice(0, 6),
-  Instagram: prompts.slice(2, 8),
-  Photography: prompts.slice(4, 10),
-};
+const categories = ["All", ...Array.from(new Set(prompts.map((p) => p.category)))];
 
 function Index() {
   const [active, setActive] = useState<Prompt | null>(null);
@@ -26,12 +19,8 @@ function Index() {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
-    const subset = subsets[category] ?? prompts;
-    const source = subsets[category] ? subset : prompts;
-
-    return source.filter((p) => {
-      const matchCat = category === "All" || subsets[category] || p.category === category;
-      if (!matchCat) return false;
+    return prompts.filter((p) => {
+      if (category !== "All" && p.category !== category) return false;
       const q = query.trim().toLowerCase();
       if (!q) return true;
       return (
