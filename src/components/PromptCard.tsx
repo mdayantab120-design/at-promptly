@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Copy, Check, Bookmark } from "lucide-react";
 import { toast } from "sonner";
 import type { Prompt } from "@/data/prompts";
 
@@ -11,6 +11,14 @@ interface Props {
 
 export function PromptCard({ prompt, index, onOpen }: Props) {
   const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    try {
+      const list: string[] = JSON.parse(localStorage.getItem("saved-prompts") || "[]");
+      setSaved(list.includes(prompt.id));
+    } catch {}
+  }, [prompt.id]);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -18,6 +26,17 @@ export function PromptCard({ prompt, index, onOpen }: Props) {
     setCopied(true);
     toast.success("Prompt copied!");
     setTimeout(() => setCopied(false), 1800);
+  };
+
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const list: string[] = JSON.parse(localStorage.getItem("saved-prompts") || "[]");
+      const next = list.includes(prompt.id) ? list.filter((i) => i !== prompt.id) : [...list, prompt.id];
+      localStorage.setItem("saved-prompts", JSON.stringify(next));
+      setSaved(next.includes(prompt.id));
+      toast.success(next.includes(prompt.id) ? "Saved" : "Removed");
+    } catch {}
   };
 
   return (
@@ -40,6 +59,15 @@ export function PromptCard({ prompt, index, onOpen }: Props) {
         >
           {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
           {copied ? "Copied" : "Copy Prompt"}
+        </button>
+        <button
+          onClick={handleSave}
+          aria-label={saved ? "Unsave" : "Save"}
+          className={`absolute top-3 left-3 inline-flex size-8 items-center justify-center rounded-full glass border border-border/60 transition-all duration-300 hover:bg-brand hover:text-primary-foreground hover:border-transparent ${
+            saved ? "bg-brand text-primary-foreground border-transparent opacity-100" : "text-foreground opacity-0 group-hover:opacity-100"
+          }`}
+        >
+          <Bookmark className={`size-3.5 ${saved ? "fill-current" : ""}`} />
         </button>
       </div>
       <div className="p-4">
