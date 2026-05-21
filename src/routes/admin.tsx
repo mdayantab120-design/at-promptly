@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useMutation, useQueryClient, useServerFn } from "@tanstack/react-query";
-import { useServerFn as useStartFn } from "@tanstack/react-start";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Toaster, toast } from "sonner";
 import { Loader2, Upload, Sparkles } from "lucide-react";
 import { createPrompt } from "@/lib/prompts.functions";
@@ -30,7 +30,7 @@ function fileToBase64(file: File): Promise<string> {
 
 function AdminPage() {
   const qc = useQueryClient();
-  const create = useStartFn(createPrompt);
+  const create = useServerFn(createPrompt);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
