@@ -1,22 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Sparkles, Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Sparkles, Search, Loader2 } from "lucide-react";
 import { Toaster } from "sonner";
-import { prompts, type Prompt } from "@/data/prompts";
+import { supabase } from "@/integrations/supabase/client";
+import type { Prompt } from "@/data/prompts";
 import { PromptCard } from "@/components/PromptCard";
 import { PromptModal } from "@/components/PromptModal";
-
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const categories = ["All", ...Array.from(new Set(prompts.map((p) => p.category)))];
-
 function Index() {
   const [active, setActive] = useState<Prompt | null>(null);
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
+
+  const { data: prompts = [], isLoading } = useQuery({
+    queryKey: ["prompts"],
+    queryFn: async (): Promise<Prompt[]> => {
+      const { data, error } = await supabase
+        .from("prompts")
+        .select("id,title,category,prompt,image_url,created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map((r) => ({
+        id: r.id,
+        title: r.title,
+        category: r.category,
+        prompt: r.prompt,
+        image: r.image_url,
+      }));
+    },
+  });
+
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(prompts.map((p) => p.category)))],
+    [prompts]
+  );
 
   const filtered = useMemo(() => {
     return prompts.filter((p) => {
@@ -29,7 +51,7 @@ function Index() {
         p.category.toLowerCase().includes(q)
       );
     });
-  }, [category, query]);
+  }, [prompts, category, query]);
 
   return (
     <div className="min-h-screen">
@@ -64,7 +86,6 @@ function Index() {
         </p>
       </section>
 
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 mb-4">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth snap-x">
           {categories.map((c) => (
@@ -84,8 +105,12 @@ function Index() {
       </div>
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 pb-20">
-        {filtered.length === 0 ? (
-          <p className="text-center text-muted-foreground py-20">No prompts match your search.</p>
+        {isLoading ? (
+          <div className="flex justify-center py-20"><Loader2 className="size-6 animate-spin text-muted-foreground" /></div>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-muted-foreground py-20">
+            {prompts.length === 0 ? "No prompts yet. Add some from the admin page." : "No prompts match your search."}
+          </p>
         ) : (
           <div className="columns-2 lg:columns-3 xl:columns-4 gap-3 sm:gap-4">
             {filtered.map((p, i) => (
